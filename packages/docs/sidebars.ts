@@ -117,6 +117,7 @@ const sidebars: SidebarsConfig = {
 				'cli/versions',
 				'cli/upgrade',
 				'cli/add',
+				'cli/skills',
 				'cli/ffmpeg',
 				'cli/ffprobe',
 				'cli/gpu',
@@ -1379,6 +1380,7 @@ const sidebars: SidebarsConfig = {
 				'miscellaneous/parse-media-vs-get-video-metadata',
 				'miscellaneous/pexels',
 				'compare/motion-canvas',
+				'lovable-for-motion-graphics',
 			],
 		},
 		{
