@@ -14,6 +14,7 @@ import {
 import {CircleDemo} from './Circle';
 import {EllipseDemo} from './Ellipse';
 import {HeartDemo} from './Heart';
+import {LightLeakDemoComp} from './LightLeakDemo';
 import {NoiseComp} from './NoiseDemo';
 import {PieDemo} from './Pie';
 import {PolygonDemo} from './Polygon';
@@ -29,6 +30,10 @@ import {
 	SkewDemo,
 	TranslateDemo,
 } from './Translate';
+import {ShaderDemoComp} from './ShaderDemo';
+import {TransitionSeriesEnterExitDemoComp} from './TransitionSeriesEnterExitDemo';
+import {TransitionSeriesOverlayDemoComp} from './TransitionSeriesOverlayDemo';
+import {TransitionSeriesTransitionDemoComp} from './TransitionSeriesTransitionDemo';
 import {TriangleDemo} from './Triangle';
 
 export type Option = {
@@ -885,6 +890,17 @@ export const springDemo: DemoType = {
 	],
 };
 
+export const shaderDemo: DemoType = {
+	comp: ShaderDemoComp,
+	compHeight: 720,
+	compWidth: 1280,
+	durationInFrames: 150,
+	fps: 30,
+	id: 'shader',
+	autoPlay: true,
+	options: [],
+};
+
 export const springDampingDemo: DemoType = {
 	comp: SpringDemo,
 	compHeight: 400,
@@ -901,6 +917,113 @@ export const springDampingDemo: DemoType = {
 			min: 1,
 			max: 200,
 			step: 1,
+			optional: 'no',
+		},
+	],
+};
+
+export const lightLeakDemo: DemoType = {
+	comp: LightLeakDemoComp,
+	compHeight: 720,
+	compWidth: 1280,
+	durationInFrames: 90,
+	fps: 30,
+	id: 'light-leak',
+	autoPlay: true,
+	options: [
+		{
+			name: 'seed',
+			type: 'numeric',
+			default: 0,
+			min: 0,
+			max: 100,
+			step: 1,
+			optional: 'no',
+		},
+		{
+			name: 'hueShift',
+			type: 'numeric',
+			default: 0,
+			min: 0,
+			max: 360,
+			step: 1,
+			optional: 'no',
+		},
+	],
+};
+
+export const transitionSeriesTransitionDemo: DemoType = {
+	comp: TransitionSeriesTransitionDemoComp,
+	compHeight: 280,
+	compWidth: 540,
+	durationInFrames: 120,
+	fps: 30,
+	id: 'transition-series-transition',
+	autoPlay: true,
+	options: [
+		{
+			name: 'presentation',
+			type: 'enum',
+			default: 'fade',
+			values: ['fade', 'slide', 'wipe'],
+			optional: 'no',
+		},
+		{
+			name: 'transitionDuration',
+			type: 'numeric',
+			default: 15,
+			min: 5,
+			max: 40,
+			step: 1,
+			optional: 'no',
+		},
+	],
+};
+
+export const transitionSeriesOverlayDemo: DemoType = {
+	comp: TransitionSeriesOverlayDemoComp,
+	compHeight: 280,
+	compWidth: 540,
+	durationInFrames: 120,
+	fps: 30,
+	id: 'transition-series-overlay',
+	autoPlay: true,
+	options: [
+		{
+			name: 'overlayDuration',
+			type: 'numeric',
+			default: 30,
+			min: 4,
+			max: 60,
+			step: 2,
+			optional: 'no',
+		},
+		{
+			name: 'offset',
+			type: 'numeric',
+			default: 0,
+			min: -20,
+			max: 20,
+			step: 1,
+			optional: 'no',
+		},
+	],
+};
+
+export const transitionSeriesEnterExitDemo: DemoType = {
+	comp: TransitionSeriesEnterExitDemoComp,
+	compHeight: 280,
+	compWidth: 540,
+	durationInFrames: 60,
+	fps: 30,
+	id: 'transition-series-enter-exit',
+	autoPlay: true,
+	options: [
+		{
+			name: 'presentation',
+			type: 'enum',
+			default: 'slide',
+			values: ['slide', 'fade', 'wipe'],
 			optional: 'no',
 		},
 	],
