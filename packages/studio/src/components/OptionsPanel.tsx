@@ -11,6 +11,7 @@ import type {_InternalTypes} from 'remotion';
 import {Internals} from 'remotion';
 import {BACKGROUND} from '../helpers/colors';
 import {useMobileLayout} from '../helpers/mobile-layout';
+import {SHOW_BROWSER_RENDERING} from '../helpers/show-browser-rendering';
 import {VisualControlsTabActivatedContext} from '../visual-controls/VisualControls';
 import {GlobalPropsEditorUpdateButton} from './GlobalPropsEditorUpdateButton';
 import {DataEditor} from './RenderModal/DataEditor';
@@ -24,8 +25,8 @@ type OptionsSidebarPanel = 'input-props' | 'renders' | 'visual-controls';
 
 const localStorageKey = 'remotion.sidebarPanel';
 
-const getSelectedPanel = (readOnlyStudio: boolean): OptionsSidebarPanel => {
-	if (readOnlyStudio) {
+const getSelectedPanel = (renderingAvailable: boolean): OptionsSidebarPanel => {
+	if (!renderingAvailable) {
 		return 'input-props';
 	}
 
@@ -63,6 +64,8 @@ export const OptionsPanel: React.FC<{
 	);
 	const [saving, setSaving] = useState(false);
 
+	const renderingAvailable = !readOnlyStudio || SHOW_BROWSER_RENDERING;
+
 	const isMobileLayout = useMobileLayout();
 
 	const visualControlsTabActivated = useContext(
@@ -82,7 +85,7 @@ export const OptionsPanel: React.FC<{
 	);
 
 	const [panel, setPanel] = useState<OptionsSidebarPanel>(() =>
-		getSelectedPanel(readOnlyStudio),
+		getSelectedPanel(renderingAvailable),
 	);
 	const onPropsSelected = useCallback(() => {
 		setPanel('input-props');
@@ -192,44 +195,44 @@ export const OptionsPanel: React.FC<{
 							Controls
 						</Tab>
 					) : null}
-					{composition ? (
-						<Tab
-							selected={panel === 'input-props'}
-							onClick={onPropsSelected}
-							style={{justifyContent: 'space-between'}}
-						>
-							Props
-							{unsavedChangesExist ? (
-								<GlobalPropsEditorUpdateButton
-									compositionId={composition.id}
-									currentDefaultProps={currentDefaultProps}
-								/>
-							) : null}
-						</Tab>
-					) : null}
-					{readOnlyStudio ? null : (
+					<Tab
+						selected={panel === 'input-props'}
+						onClick={onPropsSelected}
+						style={{justifyContent: 'space-between'}}
+					>
+						Props
+						{unsavedChangesExist && composition ? (
+							<GlobalPropsEditorUpdateButton
+								compositionId={composition.id}
+								currentDefaultProps={currentDefaultProps}
+							/>
+						) : null}
+					</Tab>
+					{renderingAvailable ? (
 						<RendersTab
 							onClick={onRendersSelected}
 							selected={panel === 'renders'}
 						/>
-					)}
+					) : null}
 				</Tabs>
 			</div>
-			{panel === `input-props` && composition ? (
-				<DataEditor
-					key={composition.id}
-					unresolvedComposition={composition}
-					defaultProps={currentDefaultProps}
-					setDefaultProps={setDefaultProps}
-					mayShowSaveButton
-					propsEditType="default-props"
-					saving={saving}
-					setSaving={setSaving}
-					readOnlyStudio={readOnlyStudio}
-				/>
+			{panel === 'input-props' ? (
+				composition ? (
+					<DataEditor
+						key={composition.id}
+						unresolvedComposition={composition}
+						defaultProps={currentDefaultProps}
+						setDefaultProps={setDefaultProps}
+						mayShowSaveButton
+						propsEditType="default-props"
+						saving={saving}
+						setSaving={setSaving}
+						readOnlyStudio={readOnlyStudio}
+					/>
+				) : null
 			) : panel === 'visual-controls' && visualControlsTabActivated ? (
 				<VisualControlsContent />
-			) : readOnlyStudio ? null : (
+			) : !renderingAvailable ? null : (
 				<RenderQueue />
 			)}
 		</div>

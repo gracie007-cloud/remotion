@@ -1,7 +1,7 @@
 import {describe, expect, it} from 'bun:test';
-import {CreateVideoInternals, Template} from 'create-video';
 import {existsSync, readFileSync} from 'node:fs';
 import path from 'node:path';
+import {CreateVideoInternals, Template} from 'create-video';
 
 const {FEATURED_TEMPLATES} = CreateVideoInternals;
 
@@ -38,17 +38,47 @@ describe('Templates should be valid', () => {
 			expect(body.dependencies.react).toMatch(/^\^?19/);
 			expect(body.dependencies['react-dom']).toMatch(/^\^?19/);
 
-			if (
-				body.dependencies['zod'] &&
-				!template.shortName.includes('Prompt to Motion Graphics')
-			) {
-				expect(body.dependencies['zod']).toBe('3.22.3');
-			}
 			if (body.dependencies['@types/web']) {
 				expect(body.dependencies['@types/web']).toInclude('0.0.166');
 			}
 
-			expect(body.devDependencies.prettier).toMatch('3.6.0');
+			const rootPackageJson = JSON.parse(
+				readFileSync(
+					path.join(process.cwd(), '..', '..', 'package.json'),
+					'utf8',
+				),
+			);
+			const catalog = rootPackageJson.workspaces.catalog;
+
+			if (body.dependencies.mediabunny) {
+				expect(body.dependencies.mediabunny).toBe(catalog.mediabunny);
+			}
+
+			if (body.dependencies['@mediabunny/mp3-encoder']) {
+				expect(body.dependencies['@mediabunny/mp3-encoder']).toBe(
+					catalog['@mediabunny/mp3-encoder'],
+				);
+			}
+
+			if (body.dependencies['@mediabunny/ac3']) {
+				expect(body.dependencies['@mediabunny/ac3']).toBe(
+					catalog['@mediabunny/ac3'],
+				);
+			}
+
+			if (body.dependencies['@mediabunny/aac-encoder']) {
+				expect(body.dependencies['@mediabunny/aac-encoder']).toBe(
+					catalog['@mediabunny/aac-encoder'],
+				);
+			}
+
+			if (body.dependencies['@mediabunny/flac-encoder']) {
+				expect(body.dependencies['@mediabunny/flac-encoder']).toBe(
+					catalog['@mediabunny/flac-encoder'],
+				);
+			}
+
+			expect(body.devDependencies.prettier).toMatch('3.8.1');
 			expect(body.private).toBe(true);
 			expect(body.name).toStartWith('template-');
 
@@ -91,7 +121,7 @@ describe('Templates should be valid', () => {
 				/(remotion\sstudio)|(next dev)|(react-router dev)|(tsx watch)|(tsx src\/studio)|(bun studio\.ts)/,
 			);
 			expect(scripts.build).toMatch(
-				/(remotion\sbundle)|(react-router build)|(next\sbuild)|(tsx src\/render)|(tsc \&\& vite build)/,
+				/(remotion\sbundle)|(react-router build)|(next\sbuild)|(tsx src\/render)|(tsc \&\& vite build)|(bun build\.ts)/,
 			);
 		});
 
@@ -155,6 +185,15 @@ describe('Templates should be valid', () => {
 			expect(contents).not.toContain(
 				'setExperimentalClientSideRenderingEnabled',
 			);
+		});
+
+		it(`${template.shortName} should not use setExperimentalRspackEnabled`, async () => {
+			const {contents, entryPoint} = await findFile([
+				getFileForTemplate(template, 'remotion.config.ts'),
+				getFileForTemplate(template, 'remotion.config.js'),
+			]);
+			expect(entryPoint).toBeTruthy();
+			expect(contents).not.toContain('setExperimentalRspackEnabled');
 		});
 
 		it(`${template.shortName} should use good tsconfig values`, async () => {

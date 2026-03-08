@@ -1,3 +1,4 @@
+import type {CompletedClientRender} from '@remotion/studio-shared';
 import type {
 	RenderStillOnWebImageFormat,
 	WebRendererAudioCodec,
@@ -8,23 +9,21 @@ import type {
 import type {LogLevel} from 'remotion';
 
 export type ClientRenderJobProgress = {
-	renderedFrames: number;
 	encodedFrames: number;
 	totalFrames: number;
 };
 
 export type GetBlobCallback = () => Promise<Blob>;
 
-export type ClientRenderMetadata = {
-	width: number;
-	height: number;
-	sizeInBytes: number;
-};
-
 type ClientRenderJobDynamicStatus =
 	| {status: 'idle'}
 	| {status: 'running'; progress: ClientRenderJobProgress}
-	| {status: 'done'; getBlob: GetBlobCallback; metadata: ClientRenderMetadata}
+	| {status: 'saving'}
+	| {
+			status: 'done';
+			getBlob?: GetBlobCallback;
+			metadata: CompletedClientRender['metadata'];
+	  }
 	| {status: 'cancelled'}
 	| {
 			status: 'failed';
@@ -53,7 +52,7 @@ export type ClientStillRenderJob = ClientRenderJobBase & {
 export type ClientVideoRenderJob = ClientRenderJobBase & {
 	type: 'client-video';
 	container: WebRendererContainer;
-	videoCodec: WebRendererVideoCodec;
+	videoCodec: WebRendererVideoCodec | null;
 	audioCodec: WebRendererAudioCodec;
 	startFrame: number;
 	endFrame: number;
@@ -65,4 +64,18 @@ export type ClientVideoRenderJob = ClientRenderJobBase & {
 	muted: boolean;
 } & ClientRenderJobDynamicStatus;
 
-export type ClientRenderJob = ClientStillRenderJob | ClientVideoRenderJob;
+export type RestoredClientRenderJob = CompletedClientRender & {
+	status: 'done';
+	getBlob?: GetBlobCallback;
+};
+
+export type ClientRenderJob =
+	| ClientStillRenderJob
+	| ClientVideoRenderJob
+	| RestoredClientRenderJob;
+
+export const isRestoredClientJob = (
+	job: ClientRenderJob,
+): job is RestoredClientRenderJob => {
+	return !('inputProps' in job);
+};

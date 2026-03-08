@@ -11,11 +11,14 @@ import type {
 } from '@remotion/renderer';
 import type {HardwareAccelerationOption} from '@remotion/renderer/client';
 import type {_InternalTypes} from 'remotion';
+import type {CanUpdateSequencePropStatus} from 'remotion';
 import type {RecastCodemod, VisualControlChange} from './codemods';
 import type {PackageManager} from './package-manager';
 import type {ProjectInfo} from './project-info';
 import type {RequiredChromiumOptions} from './render-job';
 import type {EnumPath} from './stringify-default-props';
+
+export type SequenceNodePath = Array<string | number>;
 
 export type OpenInFileExplorerRequest = {
 	directory: string;
@@ -191,6 +194,56 @@ export type CanUpdateDefaultPropsResponse =
 			reason: string;
 	  };
 
+export type CanUpdateSequencePropsRequest = {
+	fileName: string;
+	nodePath: SequenceNodePath;
+	keys: string[];
+};
+
+export type SubscribeToSequencePropsRequest = {
+	fileName: string;
+	line: number;
+	column: number;
+	keys: string[];
+	clientId: string;
+};
+
+export type SubscribeToSequencePropsResponse = CanUpdateSequencePropsResponse;
+
+export type UnsubscribeFromSequencePropsRequest = {
+	fileName: string;
+	nodePath: SequenceNodePath;
+	clientId: string;
+};
+
+export type CanUpdateSequencePropsResponse =
+	| {
+			canUpdate: true;
+			props: Record<string, CanUpdateSequencePropStatus>;
+			nodePath: SequenceNodePath;
+	  }
+	| {
+			canUpdate: false;
+			reason: string;
+	  };
+
+export type SaveSequencePropsRequest = {
+	fileName: string;
+	nodePath: SequenceNodePath;
+	key: string;
+	value: string;
+	defaultValue: string | null;
+};
+
+export type SaveSequencePropsResponse =
+	| {
+			success: true;
+	  }
+	| {
+			success: false;
+			reason: string;
+	  };
+
 export type UpdateAvailableRequest = {};
 export type UpdateAvailableResponse = {
 	currentVersion: string;
@@ -237,6 +290,18 @@ export type ApiRoutes = {
 	'/api/can-update-default-props': ReqAndRes<
 		CanUpdateDefaultPropsRequest,
 		CanUpdateDefaultPropsResponse
+	>;
+	'/api/subscribe-to-sequence-props': ReqAndRes<
+		SubscribeToSequencePropsRequest,
+		SubscribeToSequencePropsResponse
+	>;
+	'/api/unsubscribe-from-sequence-props': ReqAndRes<
+		UnsubscribeFromSequencePropsRequest,
+		undefined
+	>;
+	'/api/save-sequence-props': ReqAndRes<
+		SaveSequencePropsRequest,
+		SaveSequencePropsResponse
 	>;
 	'/api/update-available': ReqAndRes<
 		UpdateAvailableRequest,

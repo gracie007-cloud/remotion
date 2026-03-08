@@ -1,6 +1,3 @@
-// @ts-expect-error no types
-import styles from './styles.module.scss';
-
 import {alias} from 'lib/alias';
 import React, {useCallback, useMemo} from 'react';
 import {
@@ -60,12 +57,7 @@ import RemoteVideo from './RemoteVideo';
 import {RetryDelayRender} from './RetryDelayRender';
 import RiveVehicle from './Rive/RiveExample';
 import {ScalePath} from './ScalePath';
-import {
-	ArrayTest,
-	SchemaTest,
-	schemaArrayTestSchema,
-	schemaTestSchema,
-} from './SchemaTest';
+import {SchemaTest, schemaTestSchema} from './SchemaTest';
 import {Scripts} from './Scripts';
 import {WidthHeightSequences} from './Sequence/WidthHeightSequences';
 import CircleTest from './Shapes/CircleTest';
@@ -74,6 +66,7 @@ import RectTest from './Shapes/RectTest';
 import StarTest from './Shapes/StarTest';
 import TriangleTest from './Shapes/TriangleTest';
 import {SkipZeroFrame} from './SkipZeroFrame';
+import {SlicedVideo} from './SlicedVideo';
 import {BaseSpring, SpringWithDuration} from './Spring/base-spring';
 import {SeriesTesting} from './StaggerTesting';
 import {StaticDemo} from './StaticServer';
@@ -87,8 +80,8 @@ import {
 } from './StudioApis/SaveDefaultProps';
 import {TriggerCalculateMetadata} from './StudioApis/TriggerCalculateMetadata';
 import {WriteStaticFile} from './StudioApis/WriteStaticFile';
-import './style.css';
 import {SubtitleArtifact} from './SubtitleArtifact/SubtitleArtifact';
+import './style.css';
 import {SvgFilter} from './SvgFilter';
 import {Tailwind} from './Tailwind';
 import {TenFrameTester} from './TenFrameTester';
@@ -109,6 +102,9 @@ import {VideoTesting} from './VideoTesting';
 import {WarpDemoOuter} from './WarpText';
 import {WarpDemo2} from './WarpText/demo2';
 import {WatchStaticDemo} from './watch-static';
+import {ZodV4SchemaTest, zodV4Schema} from './ZodV4SchemaTest';
+// @ts-expect-error no types
+import styles from './styles.module.scss';
 
 if (alias !== 'alias') {
 	throw new Error('should support TS aliases');
@@ -124,17 +120,12 @@ import {ThreeDSvgContent} from './3DSvgContent';
 import {AnimatedImages} from './AnimatedImage/Avif';
 import Amplify from './AudioTesting/Amplify';
 import {BrowserTest} from './BrowserTest';
-import {CTAEndCard} from './CallToAction';
-import {
-	WhatIsRemotion,
-	whatIsRemotionCalculateMetadata,
-	whatIsRemotionSchema,
-} from './Compose/WhatIsRemotion';
 import {EdgeBlur} from './EdgeBlur/EdgeBlur';
 import {Empty} from './Empty';
 import {JumpCuts, SAMPLE_SECTIONS, calculateMetadataJumpCuts} from './JumpCuts';
 import {LightLeakExample} from './LightLeak';
 import {LightLeakAnimatedSize} from './LightLeak/AnimatedSize';
+import {LoopDisplayTestComp} from './LoopDisplayTest';
 import {NewAudioExample} from './NewAudio/NewAudio';
 import {NewVideoComp} from './NewVideo';
 import {ChangingTrimBeforeValue} from './OffthreadRemoteVideo/ChangingTrimBefore';
@@ -145,8 +136,10 @@ import {OffthreadRemoteSeries} from './OffthreadRemoteVideo/OffthreadRemoteSerie
 import {ParseAndDownloadMedia} from './ParseAndDownloadMedia';
 import {PremountOnTransitionSeries} from './PremountOnTransitionSeries';
 import {PrintProps} from './PrintProps';
+import {SfxExample} from './Sfx';
 import {SmoothTextTransition} from './SmoothTextTransition';
 import {SpringSeason} from './SpringSeason';
+import {StarburstExample} from './Starburst';
 import {Seek} from './StudioApis/Seek';
 import {TikTokTextBoxPlayground} from './TikTokTextbox/TikTokTextBox';
 import {FitTextOnNLines, fitTextOnNLinesSchema} from './Title/FitTextOnNLines';
@@ -162,6 +155,8 @@ import {VideoTestingPlayback} from './VideoTesting/playback';
 import {VideoTestingTrim} from './VideoTesting/trim';
 import {RemotionMediaVideoTexture} from './VideoTexture';
 import {VisualControls} from './VisualControls';
+import {FastUpdates} from './VisualModeTests/FastUpdates';
+import {FastUpdatesNested} from './VisualModeTests/FastUpdatesNested';
 import {VoiceVisualization} from './voice-visualization';
 import {WhisperWeb} from './WhisperWeb';
 
@@ -793,6 +788,7 @@ export const Index: React.FC = () => {
 				/>
 				<OffthreadRemoteVideo />
 				<NewVideoComp />
+				<LoopDisplayTestComp />
 				<OffthreadRemoteSeries />
 				<LoopedNewVideo />
 				<LoopedOffthreadRemoteVideo />
@@ -1414,6 +1410,14 @@ export const Index: React.FC = () => {
 					durationInFrames={300}
 					width={1080}
 				/>
+				<Composition
+					id="sliced-video"
+					component={SlicedVideo}
+					fps={30}
+					height={1080}
+					durationInFrames={300}
+					width={1920}
+				/>
 			</Folder>
 			<Folder name="Postmount">
 				<Composition
@@ -1495,16 +1499,23 @@ export const Index: React.FC = () => {
 					durationInFrames={150}
 					schema={schemaTestSchema}
 				/>
+
 				<Composition
-					id="array-schema"
-					component={ArrayTest}
-					width={1200}
-					height={630}
+					id="zod-v4-schema-test"
+					component={ZodV4SchemaTest}
+					width={1920}
+					height={1080}
 					fps={30}
 					durationInFrames={150}
-					// @ts-expect-error Needs an object
-					schema={schemaArrayTestSchema}
-					defaultProps={{}}
+					schema={zodV4Schema}
+					defaultProps={{
+						greeting: 'Hello from Zod v4!',
+						count: 42,
+						enabled: false,
+						items: [{label: 'alpha!', value: 1}],
+						mode: 'light' as const,
+						nested: {a: 'asdfadsf', b: 99},
+					}}
 				/>
 			</Folder>
 			<Folder name="TailwindCSS">
@@ -1697,16 +1708,6 @@ export const Index: React.FC = () => {
 					durationInFrames={1000}
 				/>
 				<Composition
-					id="WhatIsRemotion"
-					component={WhatIsRemotion}
-					width={1080}
-					fps={30}
-					durationInFrames={273}
-					schema={whatIsRemotionSchema}
-					defaultProps={{fade: false, whiteBackground: false, reel: false}}
-					calculateMetadata={whatIsRemotionCalculateMetadata}
-				/>
-				<Composition
 					id="3DContext"
 					component={ThreeDContext}
 					width={1080}
@@ -1786,25 +1787,6 @@ export const Index: React.FC = () => {
 				durationInFrames={500}
 			/>
 			<Composition
-				id="CallToAction"
-				component={CTAEndCard}
-				width={1920}
-				height={1080}
-				fps={30}
-				durationInFrames={180}
-				defaultProps={{
-					cornerRadius: 10,
-				}}
-				calculateMetadata={() => {
-					return {
-						defaultPixelFormat: 'yuva444p10le',
-						defaultCodec: 'prores',
-						defaultProResProfile: '4444',
-						defaultVideoImageFormat: 'png',
-					};
-				}}
-			/>
-			<Composition
 				id="Triangle"
 				component={TriangleComp}
 				width={100}
@@ -1838,6 +1820,24 @@ export const Index: React.FC = () => {
 					durationInFrames={120}
 				/>
 			</Folder>
+			<Folder name="starburst">
+				<Composition
+					id="starburst"
+					component={StarburstExample}
+					width={1080}
+					height={1080}
+					fps={30}
+					durationInFrames={90}
+				/>
+			</Folder>
+			<Composition
+				id="sfx"
+				component={SfxExample}
+				width={1080}
+				height={1080}
+				fps={30}
+				durationInFrames={60}
+			/>
 			<Folder name="transition-series-overlay">
 				<Composition
 					id="overlay-basic"
@@ -1870,6 +1870,24 @@ export const Index: React.FC = () => {
 					height={1080}
 					fps={30}
 					durationInFrames={165}
+				/>
+			</Folder>
+			<Folder name="VisualModeTests">
+				<Composition
+					id="fast-updates"
+					component={FastUpdates}
+					width={1080}
+					height={1080}
+					fps={30}
+					durationInFrames={60}
+				/>
+				<Composition
+					id="fast-updates-nested"
+					component={FastUpdatesNested}
+					width={1080}
+					height={1080}
+					fps={30}
+					durationInFrames={60}
 				/>
 			</Folder>
 			<ChangingTrimBeforeValue />

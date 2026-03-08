@@ -1,5 +1,9 @@
 import type {StaticFile} from 'remotion';
-import type {RenderJob} from './render-job';
+import type {
+	CanUpdateSequencePropsResponse,
+	SequenceNodePath,
+} from './api-requests';
+import type {CompletedClientRender, RenderJob} from './render-job';
 
 export type EventSourceEvent =
 	| {
@@ -35,7 +39,17 @@ export type EventSourceEvent =
 			file: string;
 	  }
 	| {
+			type: 'client-renders-updated';
+			renders: CompletedClientRender[];
+	  }
+	| {
 			type: 'new-public-folder';
 			files: StaticFile[];
 			folderExists: string | null;
+	  }
+	| {
+			type: 'sequence-props-updated';
+			fileName: string;
+			nodePath: SequenceNodePath;
+			result: CanUpdateSequencePropsResponse;
 	  };

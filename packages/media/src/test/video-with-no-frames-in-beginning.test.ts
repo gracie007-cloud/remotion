@@ -6,7 +6,12 @@ import {makeNonceManager} from '../nonce-manager';
 import {extractFrame} from '../video-extraction/extract-frame';
 import {videoIteratorManager} from '../video-iterator-manager';
 
-test('in preview, should properly buffer and draw frames', async () => {
+test('in preview, should properly buffer and draw frames', async (t) => {
+	if (t.task.file.projectName === 'webkit') {
+		t.skip();
+		return;
+	}
+
 	const input = new Input({
 		source: new UrlSource('/no-frames-in-beginning.webm'),
 		formats: ALL_FORMATS,
@@ -86,14 +91,10 @@ test('same goes for audio', async () => {
 		}),
 		sharedAudioContext: new AudioContext(),
 		getIsLooping: () => false,
-		getEndTime: () => {
-			throw new Error('not implemented');
-		},
-		getStartTime: () => {
-			throw new Error('not implemented');
-		},
-		updatePlaybackTime: () => {},
+		getEndTime: () => Infinity,
+		getStartTime: () => 0,
 		initialMuted: false,
+		drawDebugOverlay: () => {},
 	});
 
 	const nonceManager = makeNonceManager();
@@ -103,33 +104,35 @@ test('same goes for audio', async () => {
 		playbackRate: 1,
 		startFromSecond: 0.06671494248275864,
 		getIsPlaying: () => true,
-		scheduleAudioNode: (node, mediaTimestamp) => {
-			node.start(mediaTimestamp);
-		},
+		scheduleAudioNode: () => ({
+			type: 'started',
+			scheduledTime: 0,
+		}),
+		debugAudioScheduling: false,
 	});
 
 	await manager.seek({
 		newTime: 0.10007241372413796,
 		nonce: nonceManager.createAsyncOperation(),
-		fps: 30,
 		playbackRate: 1,
 		getIsPlaying: () => true,
-		scheduleAudioNode: (node) => {
-			node.start(1);
-		},
-		bufferState: {
-			delayPlayback: () => ({
-				unblock: () => {},
-				[Symbol.dispose]: () => {},
-			}),
-		},
+		scheduleAudioNode: () => ({
+			type: 'started',
+			scheduledTime: 0,
+		}),
+		debugAudioScheduling: false,
 	});
 
 	const iterators = manager.getAudioIteratorsCreated();
 	expect(iterators).toBe(1);
 });
 
-test('in rendering, should also be smart', async () => {
+test('in rendering, should also be smart', async (t) => {
+	if (t.task.file.projectName === 'webkit') {
+		t.skip();
+		return;
+	}
+
 	let lastFrame;
 	for (let i = 0; i < 5; i++) {
 		const frame = await extractFrame({

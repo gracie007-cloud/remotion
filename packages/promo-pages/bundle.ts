@@ -1,5 +1,4 @@
 import {$, build} from 'bun';
-
 import {NoReactInternals} from 'remotion/no-react';
 
 if (process.env.NODE_ENV !== 'production') {
@@ -36,6 +35,7 @@ const result = await build({
 		'./src/components/prompts/PromptsGallery.tsx',
 		'./src/components/prompts/PromptsSubmit.tsx',
 		'./src/components/prompts/PromptsShow.tsx',
+		'./src/components/prompts/prompt-types.ts',
 	],
 	root: './src/components',
 	outdir: 'dist',
@@ -49,6 +49,11 @@ const result = await build({
 		'plyr',
 		'zod',
 		'@mux/upchunk',
+		'mediabunny',
+		'@mediabunny/ac3',
+		'@mediabunny/aac-encoder',
+		'@mediabunny/flac-encoder',
+		'@mediabunny/mp3-encoder',
 	],
 });
 
